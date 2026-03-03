@@ -1,4 +1,5 @@
 import json
+import re
 import time
 import httpx
 from dotenv import load_dotenv
@@ -7,7 +8,14 @@ from .prompts import SYSTEM_PROMPT, USER_TEMPLATE
 from .schemas import ScanResult
 
 MAX_RETRIES = 5
-INITIAL_BACKOFF = 2  # seconds
+INITIAL_BACKOFF = 5  # seconds
+
+def _extract_json(text: str) -> str:
+    """Strip markdown code fences if present, e.g. ```json ... ```"""
+    m = re.search(r"```(?:json)?\s*\n?(.*?)```", text, re.DOTALL)
+    if m:
+        return m.group(1).strip()
+    return text.strip()
 
 def scan(content: str, *, language: str="python", input_type: str="file", path_hint: str="unknown") -> dict:
     load_dotenv()
@@ -25,6 +33,8 @@ def scan(content: str, *, language: str="python", input_type: str="file", path_h
         ],
     }
 
+    print(f"[scanner] Using: {s.base_url} | Model: {s.model}")
+
     headers = {"Authorization": f"Bearer {s.api_key}"}
     with httpx.Client(base_url=s.base_url, headers=headers, timeout=60.0) as client:
         for attempt in range(MAX_RETRIES):
@@ -41,10 +51,10 @@ def scan(content: str, *, language: str="python", input_type: str="file", path_h
             data = r.json()
             break
         else:
-            # All retries exhausted
-            raise RuntimeError(f"OpenAI API rate limit exceeded after {MAX_RETRIES} retries.")
+            raise RuntimeError(f"API rate limit exceeded after {MAX_RETRIES} retries.")
 
     text = data["choices"][0]["message"]["content"]
+    text = _extract_json(text)
     obj = json.loads(text)
     ScanResult.model_validate(obj)
     return obj

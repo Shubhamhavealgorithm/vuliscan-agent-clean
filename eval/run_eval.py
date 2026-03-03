@@ -1,4 +1,5 @@
 import json
+import time
 from pathlib import Path
 from agent.scanner import scan
 from agent.scoring import Case, ExpectedFinding, score_case
@@ -14,14 +15,17 @@ def load_cases(path: str):
 def main():
     cases_path = "eval/datasets/cases.jsonl"
     scores = []
-    for i, (raw, case) in enumerate(load_cases(cases_path)):
-        if i >= 1:
-            break
-        out = scan(raw["content"], language=raw.get("language","python"),
-                   input_type=raw.get("input_type","snippet"), path_hint=raw.get("path_hint","unknown"))
-        sc, details = score_case(out, case)
-        scores.append(sc)
-        print(case.case_id, sc, details)
+    for raw, case in load_cases(cases_path):
+        try:
+            out = scan(raw["content"], language=raw.get("language","python"),
+                       input_type=raw.get("input_type","snippet"), path_hint=raw.get("path_hint","unknown"))
+            sc, details = score_case(out, case)
+            scores.append(sc)
+            print(case.case_id, sc, details)
+        except Exception as e:
+            print(f"[ERROR] {case.case_id}: {e}")
+            scores.append(0)
+        time.sleep(3)  # 3-second pause between API calls
     print("Cases:", len(scores))
     print("Average score (1-10000):", sum(scores)/len(scores))
 

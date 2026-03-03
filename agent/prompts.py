@@ -21,6 +21,24 @@ Return ONLY valid JSON:
 
 Rules:
 - High precision; include evidence; be conservative.
+- Use these EXACT finding id formats based on category:
+  injection -> SQLI-N
+  rce -> CMDI-N
+  path_traversal -> PATH-N
+  secrets -> SECRET-N
+  deserialization -> PICKLE-N
+  auth -> AUTH-N
+  crypto -> CRYPTO-N
+  ssrf -> SSRF-N
+  deps -> DEPS-N
+  config -> CONFIG-N
+  logging -> LOG-N
+  dos -> DOS-N
+  supply_chain -> SUPPLY-N
+  other -> OTHER-N
+  where N is a sequential number starting at 1.
+- Only report real vulnerabilities you are confident about. Do not guess.
+- Report each distinct vulnerability exactly once.
 """
 
 USER_TEMPLATE = """Scan this code input for security vulnerabilities and code risks.
