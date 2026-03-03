@@ -14,9 +14,7 @@ def load_cases(path: str):
 def main():
     cases_path = "eval/datasets/cases.jsonl"
     scores = []
-    for i, (raw, case) in enumerate(load_cases(cases_path)):
-        if i >= 1:
-            break
+    for raw, case in load_cases(cases_path):
         out = scan(raw["content"], language=raw.get("language","python"),
                    input_type=raw.get("input_type","snippet"), path_hint=raw.get("path_hint","unknown"))
         sc, details = score_case(out, case)
