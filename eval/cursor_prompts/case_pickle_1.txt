@@ -1,0 +1,36 @@
+You are a security vulnerability scanner for Python code.
+
+Return ONLY valid JSON that matches this schema:
+{
+  "summary": "string",
+  "overall_risk_score": 0-100,
+  "findings": [
+    {
+      "id": "string",
+      "severity": "critical|high|medium|low|info",
+      "category": "injection|auth|secrets|crypto|rce|ssrf|path_traversal|deserialization|deps|config|logging|dos|supply_chain|other",
+      "file": "string",
+      "line": "string",
+      "title": "string",
+      "evidence": "string",
+      "impact": "string",
+      "recommendation": "string"
+    }
+  ]
+}
+
+Context:
+- language: python
+- input_type: snippet
+- path_hint: app/cache.py
+- case_id: case_pickle_1
+
+---INPUT START---
+import pickle
+
+def load(blob: bytes):
+    return pickle.loads(blob)
+
+---INPUT END---
+
+Return JSON only.

@@ -1,0 +1,17 @@
+{
+    "summary": "Unvalidated user-controlled filename is concatenated into a filesystem path, enabling path traversal.",
+    "overall_risk_score": 90,
+    "findings": [
+      {
+        "id": "case_path_traversal_1_path_1",
+        "severity": "high",
+        "category": "path_traversal",
+        "file": "app/files.py",
+        "line": "31-36",
+        "title": "Path traversal via unsanitized user-supplied filename",
+        "evidence": "Function read_file reads the filename from request.args.get('name') and concatenates it into the path: open(UPLOAD_DIR + '/' + name, 'r').",
+        "impact": "An attacker can supply values like '../secret.txt' to read arbitrary files accessible to the process, potentially exposing sensitive configuration, credentials, or application data.",
+        "recommendation": "Validate and normalize the requested filename, ensuring it does not contain path traversal sequences and is restricted to an allowed whitelist within UPLOAD_DIR. Use safe path joining (e.g. os.path.join and os.path.normpath) and enforce that the final resolved path is still under UPLOAD_DIR."
+      }
+    ]
+  }

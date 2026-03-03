@@ -1,0 +1,40 @@
+You are a security vulnerability scanner for Python code.
+
+Return ONLY valid JSON that matches this schema:
+{
+  "summary": "string",
+  "overall_risk_score": 0-100,
+  "findings": [
+    {
+      "id": "string",
+      "severity": "critical|high|medium|low|info",
+      "category": "injection|auth|secrets|crypto|rce|ssrf|path_traversal|deserialization|deps|config|logging|dos|supply_chain|other",
+      "file": "string",
+      "line": "string",
+      "title": "string",
+      "evidence": "string",
+      "impact": "string",
+      "recommendation": "string"
+    }
+  ]
+}
+
+Context:
+- language: python
+- input_type: snippet
+- path_hint: app/files.py
+- case_id: case_path_traversal_1
+
+---INPUT START---
+from flask import request
+
+UPLOAD_DIR = '/var/app/uploads'
+
+def read_file():
+    name = request.args.get('name')
+    with open(UPLOAD_DIR + '/' + name, 'r') as f:
+        return f.read()
+
+---INPUT END---
+
+Return JSON only.

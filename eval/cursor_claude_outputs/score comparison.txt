@@ -1,0 +1,35 @@
+## Benchmark Comparison (Side-by-Side)
+
+This repo measures performance using the evaluation dataset (`eval/datasets/cases.jsonl`) and the scoring metric in `agent/scoring.py` (score range **1–10,000**).
+
+### Systems Compared
+- **VULISCAN (this agent)**: `python eval/run_eval.py`
+- **Cursor Chat baseline**: Cursor **Free plan** only provides **Auto** (no explicit Claude selection). We therefore benchmarked Cursor Chat (Auto) using the same dataset and scoring.
+
+### Method (reproducible)
+1. Generate prompts:
+   ```bat
+   python eval/generate_cursor_prompts.py
+   ```
+2. For each prompt in `eval/cursor_prompts/<case_id>.txt`, paste into Cursor Chat (Auto) and save JSON output to:
+   `eval/cursor_claude_outputs/<case_id>.json`
+3. Score Cursor outputs:
+   ```bat
+   python eval/score_cursor_claude_outputs.py
+   ```
+
+### Results
+| Case ID | Cursor Chat (Auto) score | VULISCAN score |
+|---|---:|---:|
+| case_sql_injection_1 | 1250 | 8500 |
+| case_command_injection_1 | 1250 | 9500 |
+| case_path_traversal_1 | 1250 | 9500   |
+| case_hardcoded_secret_1 | 1250 | 9500 |
+| case_pickle_1 | 1250 | 9500 |
+
+**Average (1–10,000):**
+- Cursor Chat (Auto): **1250.0**
+- VULISCAN: **9300**
+
+### Key observed difference (example)
+Cursor Chat (Auto) often describes the correct vulnerability, but it does not follow the evaluation contract for `finding.id` (expected IDs in the dataset must match exactly). Since the scorer matches by exact ID, this yields TP=0 / FP=1 / FN=1 for each case, producing a score of 1250 despite conceptually relevant findings.

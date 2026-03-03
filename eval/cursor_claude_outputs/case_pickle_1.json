@@ -1,0 +1,17 @@
+{
+    "summary": "Unsafe deserialization using pickle.loads on untrusted data, enabling arbitrary code execution.",
+    "overall_risk_score": 95,
+    "findings": [
+      {
+        "id": "case_pickle_1_deserialization_1",
+        "severity": "critical",
+        "category": "deserialization",
+        "file": "app/cache.py",
+        "line": "31-32",
+        "title": "Unsafe deserialization with pickle.loads on potentially untrusted input",
+        "evidence": "Function load directly calls pickle.loads(blob) on the provided bytes without validation or restrictions.",
+        "impact": "If an attacker can control the blob argument, they can craft a malicious pickle payload that executes arbitrary code on deserialization, potentially leading to full system compromise.",
+        "recommendation": "Avoid using pickle for untrusted or semi-trusted data. Use a safe serialization format such as JSON or MessagePack instead. If pickle is absolutely required for trusted internal data, strictly constrain and authenticate the source, and consider using restricted unpicklers or signing/encrypting data to prevent tampering."
+      }
+    ]
+  }

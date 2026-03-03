@@ -1,0 +1,17 @@
+{
+    "summary": "Command execution built from unvalidated user input allows command injection.",
+    "overall_risk_score": 92,
+    "findings": [
+      {
+        "id": "case_command_injection_1_cmd_1",
+        "severity": "critical",
+        "category": "rce",
+        "file": "app/utils.py",
+        "line": "31-32",
+        "title": "Command injection via string concatenation in os.popen",
+        "evidence": "Function ping builds the shell command as 'ping -c 1 ' + host and passes it to os.popen, directly embedding the host parameter into the command string.",
+        "impact": "If an attacker controls the host value, they can inject additional shell metacharacters and commands (e.g. '8.8.8.8; rm -rf /'), leading to arbitrary command execution with the application's privileges.",
+        "recommendation": "Avoid building shell commands with string concatenation. Use a safe API such as subprocess.run with a list of arguments and shell=False (e.g. subprocess.run(['ping', '-c', '1', host], check=True, capture_output=True)) and validate host against an allowlist or strict hostname/IP regex before executing."
+      }
+    ]
+  }

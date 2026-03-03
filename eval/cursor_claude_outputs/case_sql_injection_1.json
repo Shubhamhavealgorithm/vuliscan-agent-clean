@@ -1,0 +1,17 @@
+{
+    "summary": "Unsafe SQL query construction using string interpolation enables SQL injection.",
+    "overall_risk_score": 90,
+    "findings": [
+      {
+        "id": "case_sql_injection_1_sqli_1",
+        "severity": "high",
+        "category": "injection",
+        "file": "app/db.py",
+        "line": "31-33",
+        "title": "SQL query constructed with unsanitized user input",
+        "evidence": "Function get_user builds the query as \"SELECT * FROM users WHERE name = '%s'\" % username, directly interpolating the username into the SQL string.",
+        "impact": "An attacker controlling the username parameter can inject arbitrary SQL into the WHERE clause, potentially bypassing authentication, reading sensitive data, or modifying database contents.",
+        "recommendation": "Use parameterized queries instead of string interpolation, for example: q = \"SELECT * FROM users WHERE name = ?\"; return conn.execute(q, (username,)); additionally validate username against an expected pattern before executing the query."
+      }
+    ]
+  }
